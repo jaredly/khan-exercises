@@ -125,6 +125,13 @@ table.limit th:first-child { text-align: right; }
 body.debug .graphie { outline: 1px dashed #fdd; }
 .graphie svg { position: absolute; top: 0; left: 0; }
 
+#mathbox {
+    display: none;
+    margin: 0 10px;
+    overflow: hidden;
+    padding-bottom: 40px;
+}
+
 #scratchpad {
     display: none;
     margin: 0 10px;

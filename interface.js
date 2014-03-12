@@ -117,6 +117,10 @@ function problemTemplateRendered() {
                     Khan.scratchpad.isVisible());
         }
     });
+    $("#mathbox-show").click(function(e) {
+        e.preventDefault();
+        Khan.mathbox.toggle();
+    });
 
     // These shouldn't interfere...
     $(PerseusBridge).trigger("problemTemplateRendered");

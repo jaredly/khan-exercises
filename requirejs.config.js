@@ -13,6 +13,7 @@
         // Utils required asynchronously by khan-exercise.js (when files are
         // required without a callback, r.js will include them automatically)
         "utils/scratchpad.js",
+        "utils/mathbox.js",
 
         // Utils used by Perseus only
         "utils/kray.js",

@@ -264,7 +264,7 @@ var Khan = {
         // was a dependency of 'math' so this isn't really any different.
         mods.push(
             "answer-types", "tmpl", "tex", "jquery.adhesion",
-            "calculator", "scratchpad");
+            "calculator", "scratchpad", "mathbox");
 
         return mods;
     },
@@ -357,6 +357,91 @@ var Khan = {
             });
         }
     },
+
+    mathbox: (function () {
+        var disabled = false, wasVisible, pad;
+
+        var actions = {
+            disable: function() {
+                wasVisible = actions.isVisible();
+                actions.hide();
+
+                $("#mathbox-show").hide();
+                $("#mathbox-not-available").show();
+                disabled = true;
+            },
+
+            enable: function() {
+                if (wasVisible) {
+                    actions.show();
+                    wasVisible = false;
+                }
+
+                $("#mathbox-show").show();
+                $("#mathbox-not-available").hide();
+                disabled = false;
+            },
+
+            isVisible: function() {
+                return $("#mathbox").is(":visible");
+            },
+
+            show: function() {
+
+                if (actions.isVisible()) {
+                    return;
+                }
+
+                var makeVisible = function() {
+                    if (!$("#mathbox").length) {
+                        // mathbox's gone! The exercise template
+                        // probably isn't on screen right now, so let's
+                        // just not try and initialize stuff otherwise
+                        // Raphael will attach an <svg> to the body.
+                        return;
+                    }
+
+                    $("#mathbox").show();
+                    $("#mathbox-show").text($._("Hide mathbox"));
+
+                    // If pad has never been created or if it's empty
+                    // because it was removed from the DOM, recreate a new
+                    // mathbox.
+                    if (!pad || !$("#mathbox textarea").length) {
+                        pad = new MathBox($("#mathbox"));
+                    }
+                };
+
+                makeVisible();
+            },
+
+            hide: function() {
+                if (!actions.isVisible()) {
+                    return;
+                }
+
+                $("#mathbox").hide();
+                $("#mathbox-show").text($._("Show mathbox"));
+            },
+
+            toggle: function() {
+                actions.isVisible() ? actions.hide() : actions.show();
+            },
+
+            clear: function() {
+                if (pad) {
+                    pad.clear();
+                }
+            },
+
+            resize: function() {
+                if (pad) {
+                    pad.resize();
+                }
+            }
+        };
+        return actions;
+    })(),
 
     scratchpad: (function() {
         var disabled = false, wasVisible, pad;
@@ -889,6 +974,7 @@ function loadAndRenderExercise(nextUserExercise) {
                 Khan.scratchpad.show();
             }
         }
+        Khan.mathbox.show();
 
         $(Exercises).trigger("clearExistingProblem");
 
@@ -964,6 +1050,7 @@ function makeProblem(exerciseId, typeOverride, seedOverride) {
     debugLog("makeProblem(" + exerciseId + ", " + typeOverride + ", " + seedOverride + ")");
 
     Khan.scratchpad.enable();
+    Khan.mathbox.enable();
 
     // Allow passing in an arbitrary seed
     if (typeof seedOverride !== "undefined") {
